@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple TV Home</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background: #0d0d13;
+            color: #ffffff;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 50px 0;
+            transform: translate3d(0, 0, 0);
+        }
+
+        /* Background Glow Effect like the image */
+        .ambient-glow {
+            position: absolute;
+            top: -10%;
+            width: 80vw;
+            height: 60vh;
+            background: radial-gradient(circle, rgba(229, 9, 20, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+            z-index: 0;
+            pointer-events: none;
+            transition: background 0.4s ease;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            width: 90%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 1400px;
+            z-index: 1;
+        }
+
+        .time-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #clock {
+            font-size: 68px;
+            font-weight: 200;
+            color: #ffffff;
+            line-height: 0.9;
+        }
+
+        #date {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 10px;
+        }
+
+        .weather-box {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .weather-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-right: 14px;
+        }
+
+        .weather-temp {
+            font-size: 28px;
+            font-weight: 300;
+        }
+
+        .weather-city {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Center Grid: Real Recommended Shows Showcase */
+        .showcase-banner {
+            width: 90%;
+            max-width: 1400px;
+            height: 42vh;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            padding: 50px;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            z-index: 1;
+            backdrop-filter: blur(20px);
+        }
+
+        .showcase-badge {
+            position: absolute;
+            top: 30px;
+            left: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #e50914;
+        }
+
+        .showcase-content {
+            max-width: 65%;
+        }
+
+        .source-platform {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 8px;
+        }
+
+        .show-title {
+            font-size: 44px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+
+        .show-desc {
+            font-size: 18px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.5;
+        }
+
+        /* Bottom Row: App Grid Matching Image Layout */
+        .apps-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 35px;
+            width: 90%;
+            max-width: 1400px;
+            margin-bottom: 10px;
+            z-index: 1;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: white;
+            border: 2px solid transparent;
+            transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.15s ease;
+            will-change: transform;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Hover & Remote Control Highlight Styles */
+        .card:focus, .card:hover {
+            transform: scale(1.08);
+            background: #ffffff;
+            color: #0d0d13;
+            border-color: #ffffff;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            outline: none;
+        }
+
+        .card-icon {
+            font-size: 46px;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow" id="glow"></div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="time-box">
+            <div id="clock">00:00</div>
+            <div id="date">Loading...</div>
+        </div>
+        
+        <!-- WEATHER -->
+        <div class="weather-box">
+            <div class="weather-info">
+                <div class="weather-temp" id="temp">--°C</div>
+                <div class="weather-city">Gradiška, BiH</div>
+            </div>
+            <div class="weather-icon" id="w-icon">☀️</div>
+        </div>
+    </div>
+
+    <!-- RECOMMENDED TRENDING SHOWCASE -->
+    <div class="showcase-banner" id="banner">
+        <div class="showcase-badge" id="badge">Popular Now</div>
+        <div class="showcase-content">
+            <div class="source-platform" id="platform">Trending Content</div>
+            <div class="show-title" id="title">Loading Recommendations...</div>
+            <div class="show-desc" id="desc">Fetching the latest popular movies and television shows from your streaming providers.</div>
+        </div>
+    </div>
+
+    <!-- APPS GRID -->
+    <div class="apps-row">
+        <a href="https://netflix.com" class="card" tabindex="1" onfocus="updateFocus('Netflix', 'rgba(229, 9, 20, 0.2)')">
+            <div class="card-icon">🍿</div>
+            <div class="card-title">Netflix</div>
+        </a>
+
+        <a href="https://primevideo.com" class="card" tabindex="2" onfocus="updateFocus('Prime Video', 'rgba(0, 168, 225, 0.2)')">
+            <div class="card-icon">🎬</div>
+            <div class="card-title">Prime Video</div>
+        </a>
+
+        <a href="https://youtube.com" class="card" tabindex="3" onfocus="updateFocus('YouTube', 'rgba(255, 0, 0, 0.2)')">
+            <div class="card-icon">📺</div>
+            <div class="card-title">YouTube</div>
+        </a>
+
+        <a href="https://spotify.com" class="card" tabindex="4" onfocus="updateFocus('Spotify', 'rgba(30, 215, 96, 0.2)')">
+            <div class="card-icon">🎶</div>
+            <div class="card-title">Spotify</div>
+        </a>
+    </div>
+
+    <script>
+        // Storage for downloaded trending recommendations
+        let trendingShows = {
+            'Netflix': [
+                { title: 'Stranger Things', desc: 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments and terrifying supernatural forces.' },
+                { title: 'Wednesday', desc: 'Smart, sarcastic and a little dead inside, Wednesday Addams investigates a murder spree while making new friends and foes.' }
+            ],
+            'Prime Video': [
+                { title: 'The Boys', desc: 'A fun and irreverent take on what happens when superheroes abuse their superpowers rather than use them for good.' },
+                { title: 'The Rings of Power', desc: 'Epic drama set thousands of years before the events of J.R.R. Tolkien\'s The Hobbit and The Lord of the Rings.' }
+            ],
+            'YouTube': [
+                { title: 'Trending Global Livestreams', desc: 'Explore live video streams from around the globe covering electronic music festivals, technology reveals, and breaking updates.' }
+            ],
+            'Spotify': [
+                { title: 'Today\'s Top Hits', desc: 'Launch your daily audio hub to play music tracks ruling global charts and newly published trending album releases.' }
+            ]
+        };
+
+        // Live Dynamic Content Swapper based on selected app card
+        function updateFocus(platform, glowColor) {
+            document.getElementById('glow').style.background = `radial-gradient(circle, ${glowColor} 0%, rgba(0, 0, 0, 0) 70%)`;
+            document.getElementById('platform').textContent = platform;
+            
+            // Cycle and show recommendations for the active platform
+            const items = trendingShows[platform];
+            if(items && items.length > 0) {
+                // Randomly alternate between trending hits to keep it fresh
+                const randomItem = items[Math.floor(Math.random() * items.length)];
+                document.getElementById('title').textContent = randomItem.title;
+                document.getElementById('desc').textContent = randomItem.desc;
+            }
+        }
+
+        // Live Real-Time Global Movie Database Fetch (Free Public Endpoint Integration)
