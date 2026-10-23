@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple TV Home</title>
+    <title>Apple TV 4K Dashboard</title>
     <style>
         * {
             box-sizing: border-box;
@@ -14,7 +14,7 @@
         }
 
         body {
-            background: #0d0d13;
+            background: #08080c;
             color: #ffffff;
             overflow: hidden;
             width: 100vw;
@@ -27,26 +27,14 @@
             transform: translate3d(0, 0, 0);
         }
 
-        /* Background Glow Effect like the image */
-        .ambient-glow {
-            position: absolute;
-            top: -10%;
-            width: 80vw;
-            height: 60vh;
-            background: radial-gradient(circle, rgba(229, 9, 20, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
-            z-index: 0;
-            pointer-events: none;
-            transition: background 0.4s ease;
-        }
-
-        /* Top Bar */
+        /* Top Bar: Minimal Clock & Weather Pill */
         .top-bar {
             width: 90%;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             max-width: 1400px;
-            z-index: 1;
+            z-index: 10;
         }
 
         .time-box {
@@ -55,10 +43,11 @@
         }
 
         #clock {
-            font-size: 68px;
+            font-size: 72px;
             font-weight: 200;
             color: #ffffff;
             line-height: 0.9;
+            letter-spacing: -1px;
         }
 
         #date {
@@ -66,29 +55,32 @@
             font-weight: 600;
             color: rgba(255, 255, 255, 0.4);
             text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-top: 10px;
+            letter-spacing: 4px;
+            margin-top: 12px;
         }
 
         .weather-box {
             display: flex;
             align-items: center;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 10px 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 24px;
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
         }
 
         .weather-info {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            margin-right: 14px;
+            margin-right: 16px;
         }
 
         .weather-temp {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 300;
+            color: #ffffff;
+            line-height: 1;
         }
 
         .weather-city {
@@ -96,42 +88,45 @@
             font-weight: 600;
             color: rgba(255, 255, 255, 0.4);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            margin-top: 6px;
         }
 
-        /* Center Grid: Real Recommended Shows Showcase */
+        .weather-icon {
+            font-size: 36px;
+            line-height: 1;
+        }
+
+        /* Center Showcase: Dynamic Up Next Banner */
         .showcase-banner {
             width: 90%;
             max-width: 1400px;
-            height: 42vh;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            height: 38vh;
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.005) 100%);
+            border-radius: 32px;
+            border: 1px solid rgba(255,255,255,0.04);
             display: flex;
             align-items: center;
-            padding: 50px;
+            padding: 60px;
             position: relative;
             box-shadow: 0 30px 60px rgba(0,0,0,0.4);
-            z-index: 1;
-            backdrop-filter: blur(20px);
         }
 
         .showcase-badge {
             position: absolute;
-            top: 30px;
-            left: 50px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 6px 16px;
+            top: 35px;
+            left: 60px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 6px 18px;
             border-radius: 30px;
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #e50914;
         }
 
         .showcase-content {
-            max-width: 65%;
+            max-width: 70%;
         }
 
         .source-platform {
@@ -139,84 +134,114 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 3px;
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255,255,255,0.3);
             margin-bottom: 8px;
         }
 
         .show-title {
-            font-size: 44px;
+            font-size: 46px;
             font-weight: 700;
             margin-bottom: 12px;
             letter-spacing: -1px;
-            line-height: 1.1;
         }
 
         .show-desc {
             font-size: 18px;
-            color: rgba(255,255,255,0.5);
+            color: rgba(255,255,255,0.45);
             line-height: 1.5;
         }
 
-        /* Bottom Row: App Grid Matching Image Layout */
+        /* Lower Row: Precise Apple TV Rounded Grid Layout */
         .apps-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 35px;
             width: 90%;
             max-width: 1400px;
-            margin-bottom: 10px;
-            z-index: 1;
+            margin-bottom: 25px;
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 24px; /* Matches exact tvOS curvature */
             aspect-ratio: 16 / 9;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            color: white;
-            border: 2px solid transparent;
-            transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.15s ease;
+            border: 4px solid transparent;
+            transition: transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.18s ease, box-shadow 0.18s ease;
             will-change: transform;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Hover & Remote Control Highlight Styles */
+        /* Hidden standard label - visible on hover/focus matching tvOS font subheaders */
+        .card-title {
+            position: absolute;
+            bottom: -30px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            transition: bottom 0.18s ease, opacity 0.18s ease;
+            opacity: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* High-Definition App Styling Backdrops */
+        .netflix-card { background-image: url('https://unsplash.com'); background-color: #b9090b; }
+        .prime-card { background-image: url('https://unsplash.com'); background-color: #00a8e1; }
+        .youtube-card { background-image: url('https://unsplash.com'); background-color: #ff0000; }
+        .spotify-card { background-image: url('https://unsplash.com'); background-color: #1ed760; }
+
+        /* Icon Overlay Layer to mimic layered app assets */
+        .card-brand-overlay {
+            font-size: 38px;
+            font-weight: 800;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.4);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.18s ease;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        /* Active Apple TV Hover & Remote Focus Transitions */
         .card:focus, .card:hover {
-            transform: scale(1.08);
-            background: #ffffff;
-            color: #0d0d13;
+            transform: scale(1.08) translateY(-5px);
             border-color: #ffffff;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.7);
             outline: none;
         }
 
-        .card-icon {
-            font-size: 46px;
-            margin-bottom: 8px;
+        .card:focus .card-brand-overlay, .card:hover .card-brand-overlay {
+            background: rgba(0, 0, 0, 0.1);
         }
 
-        .card-title {
-            font-size: 18px;
-            font-weight: 600;
+        .card:focus .card-title, .card:hover .card-title {
+            bottom: 15px;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
 
-    <div class="ambient-glow" id="glow"></div>
-
     <!-- TOP BAR -->
     <div class="top-bar">
         <div class="time-box">
-            <div id="clock">00:00</div>
+            <div id="clock">--:--</div>
             <div id="date">Loading...</div>
         </div>
         
-        <!-- WEATHER -->
+        <!-- LIVE GRADIŠKA WEATHER -->
         <div class="weather-box">
             <div class="weather-info">
                 <div class="weather-temp" id="temp">--°C</div>
@@ -226,71 +251,32 @@
         </div>
     </div>
 
-    <!-- RECOMMENDED TRENDING SHOWCASE -->
+    <!-- UPPER RECOMMENDED SHOWCASE -->
     <div class="showcase-banner" id="banner">
-        <div class="showcase-badge" id="badge">Popular Now</div>
+        <div class="showcase-badge" id="badge">Up Next</div>
         <div class="showcase-content">
-            <div class="source-platform" id="platform">Trending Content</div>
-            <div class="show-title" id="title">Loading Recommendations...</div>
-            <div class="show-desc" id="desc">Fetching the latest popular movies and television shows from your streaming providers.</div>
+            <div class="source-platform" id="platform">Welcome</div>
+            <div class="show-title" id="title">Select a Service</div>
+            <div class="show-desc" id="desc">Use your Hisense remote direction keys to highlight your preferred streaming application and explore trending movies.</div>
         </div>
     </div>
 
-    <!-- APPS GRID -->
+    <!-- OWNED APPS ROW GRID -->
     <div class="apps-row">
-        <a href="https://netflix.com" class="card" tabindex="1" onfocus="updateFocus('Netflix', 'rgba(229, 9, 20, 0.2)')">
-            <div class="card-icon">🍿</div>
-            <div class="card-title">Netflix</div>
+        <a href="https://netflix.com" class="card netflix-card" tabindex="1" onfocus="changePreview('Netflix', 'Stranger Things', 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments and terrifying supernatural forces.', '🎬 TRENDING', '#e50914')">
+            <div class="card-brand-overlay">NETFLIX</div>
+            <div class="card-title">Launch App</div>
         </a>
 
-        <a href="https://primevideo.com" class="card" tabindex="2" onfocus="updateFocus('Prime Video', 'rgba(0, 168, 225, 0.2)')">
-            <div class="card-icon">🎬</div>
-            <div class="card-title">Prime Video</div>
+        <a href="https://primevideo.com" class="card prime-card" tabindex="2" onfocus="changePreview('Prime Video', 'The Boys', 'A fun and irreverent take on what happens when superheroes abuse their superpowers rather than use them for good.', '🔹 PRIME ORIGINAL', '#00a8e1')">
+            <div class="card-brand-overlay">PRIME</div>
+            <div class="card-title">Launch App</div>
         </a>
 
-        <a href="https://youtube.com" class="card" tabindex="3" onfocus="updateFocus('YouTube', 'rgba(255, 0, 0, 0.2)')">
-            <div class="card-icon">📺</div>
-            <div class="card-title">YouTube</div>
+        <a href="https://youtube.com" class="card youtube-card" tabindex="3" onfocus="changePreview('YouTube', 'Trending Creators', 'Watch subscriptions, music playlists, and trending 4K viral video uploads optimized for television screen sizes.', '🔴 LIVE NOW', '#ff0000')">
+            <div class="card-brand-overlay">YOUTUBE</div>
+            <div class="card-title">Launch App</div>
         </a>
 
-        <a href="https://spotify.com" class="card" tabindex="4" onfocus="updateFocus('Spotify', 'rgba(30, 215, 96, 0.2)')">
-            <div class="card-icon">🎶</div>
-            <div class="card-title">Spotify</div>
-        </a>
-    </div>
-
-    <script>
-        // Storage for downloaded trending recommendations
-        let trendingShows = {
-            'Netflix': [
-                { title: 'Stranger Things', desc: 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments and terrifying supernatural forces.' },
-                { title: 'Wednesday', desc: 'Smart, sarcastic and a little dead inside, Wednesday Addams investigates a murder spree while making new friends and foes.' }
-            ],
-            'Prime Video': [
-                { title: 'The Boys', desc: 'A fun and irreverent take on what happens when superheroes abuse their superpowers rather than use them for good.' },
-                { title: 'The Rings of Power', desc: 'Epic drama set thousands of years before the events of J.R.R. Tolkien\'s The Hobbit and The Lord of the Rings.' }
-            ],
-            'YouTube': [
-                { title: 'Trending Global Livestreams', desc: 'Explore live video streams from around the globe covering electronic music festivals, technology reveals, and breaking updates.' }
-            ],
-            'Spotify': [
-                { title: 'Today\'s Top Hits', desc: 'Launch your daily audio hub to play music tracks ruling global charts and newly published trending album releases.' }
-            ]
-        };
-
-        // Live Dynamic Content Swapper based on selected app card
-        function updateFocus(platform, glowColor) {
-            document.getElementById('glow').style.background = `radial-gradient(circle, ${glowColor} 0%, rgba(0, 0, 0, 0) 70%)`;
-            document.getElementById('platform').textContent = platform;
-            
-            // Cycle and show recommendations for the active platform
-            const items = trendingShows[platform];
-            if(items && items.length > 0) {
-                // Randomly alternate between trending hits to keep it fresh
-                const randomItem = items[Math.floor(Math.random() * items.length)];
-                document.getElementById('title').textContent = randomItem.title;
-                document.getElementById('desc').textContent = randomItem.desc;
-            }
-        }
-
-        // Live Real-Time Global Movie Database Fetch (Free Public Endpoint Integration)
+        <a href="https://spotify.com" class="card spotify-card" tabindex="4" onfocus="changePreview('Spotify', 'Today\'s Top Hits', 'Play your custom music playlists, saved tracks, charts, and podcast episodes over high-fidelity audio.', '🎵 NOW PLAYING', '#1ed760')">
+            <div class="card-brand-overlay">SPOTIFY</div>
